@@ -2,68 +2,69 @@
 
 #%global selinux_variants mls targeted
 
-Summary:          389 Administration Server (admin)
-Name:             389-admin
-Version:          1.1.11
-Release:          1%{prerel}
-License:          GPLv2 and ASL 2.0
-URL:              http://directory.fedoraproject.org/
-Group:            System Environment/Daemons
-BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Summary:	389 Administration Server (admin)
+Name:		389-admin
+Version:	1.1.11
+Release:	1%{prerel}
+License:	GPLv2 and ASL 2.0
+Group:		Daemons
+URL:		http://directory.fedoraproject.org/
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-BuildRequires:    nspr-devel
-BuildRequires:    nss-devel
-BuildRequires:    svrcore-devel
-BuildRequires:    mozldap-devel
-BuildRequires:    cyrus-sasl-devel
-BuildRequires:    icu
-BuildRequires:    libicu-devel >= 4.2.1
-BuildRequires:    apache-devel
-BuildRequires:    apr-devel
-BuildRequires:    apr-util-devel
-BuildRequires:    389-adminutil-devel
+BuildRequires:	389-adminutil-devel
+BuildRequires:	apache-devel
+BuildRequires:	apr-devel
+BuildRequires:	apr-util-devel
+BuildRequires:	cyrus-sasl-devel
+BuildRequires:	icu
+BuildRequires:	libicu-devel >= 4.2.1
+BuildRequires:	mozldap-devel
+BuildRequires:	nspr-devel
+BuildRequires:	nss-devel
+BuildRequires:	svrcore-devel
 
 %if 0
 # The following are needed to build the SELinux policy
-BuildRequires:    checkpolicy
-BuildRequires:    selinux-policy-devel
-BuildRequires:    /usr/share/selinux/devel/Makefile
-BuildRequires:    389-ds-base-selinux-devel
+BuildRequires:	/usr/share/selinux/devel/Makefile
+BuildRequires:	389-ds-base-selinux-devel
+BuildRequires:	checkpolicy
+BuildRequires:	selinux-policy-devel
 %endif
 
-Requires:         389-ds-base
-Requires:         apache-mod_nss
+Requires:	389-ds-base
+Requires:	apache-mod_nss
 # the following are needed for some of our scripts
-Requires:         perl-Mozilla-LDAP
-Requires:         nss-tools
+Requires:	nss-tools
+Requires:	perl-Mozilla-LDAP
 
 # for the init script
-Requires(post): /sbin/chkconfig
-Requires(preun): /sbin/chkconfig
-Requires(preun): /sbin/service
+Requires(post):	/sbin/chkconfig
+Requires(preun):	/sbin/chkconfig
+Requires(preun):	/sbin/service
 
-Source0:          http://directory.fedoraproject.org/sources/%{name}-%{version}%{prerel}.tar.bz2
+Source0:	http://directory.fedoraproject.org/sources/%{name}-%{version}%{prerel}.tar.bz2
 # Source0-md5:	2d5c5e2058429086bbced744590aba7f
-#Patch1:           f11-httpd.patch
+#Patch1: f11-httpd.patch
 
 %description
-389 Administration Server is an HTTP agent that provides management features
-for 389 Directory Server.  It provides some management web apps that can
-be used through a web browser.  It provides the authentication, access control,
-and CGI utilities used by the console.
+389 Administration Server is an HTTP agent that provides management
+features for 389 Directory Server. It provides some management web
+apps that can be used through a web browser. It provides the
+authentication, access control, and CGI utilities used by the console.
 
 %if 0
 %package          selinux
-Summary:          SELinux policy for 389 Administration Server
-Group:            System Environment/Daemons
-Requires:         selinux-policy
-Requires:         %{name} = %{version}-%{release}
-Requires:         389-ds-base-selinux
+Summary:	SELinux policy for 389 Administration Server
+Group:		Daemons
+Requires:	%{name} = %{version}-%{release}
+Requires:	389-ds-base-selinux
+Requires:	selinux-policy
 
 %description      selinux
 SELinux policy for the 389 Adminstration Server package.
 %endif
 
+SELinux policy for the 389 Adminstration Server package.
 %prep
 %setup -q -n %{name}-%{version}%{prerel}
 #%patch1
@@ -89,20 +90,20 @@ cp %{_datadir}/dirsrv-selinux/dirsrv.if .
 cp %{_datadir}/dirsrv-selinux/dirsrv.te .
 for selinuxvariant in %{selinux_variants}
 do
-  make NAME=${selinuxvariant} -f /usr/share/selinux/devel/Makefile
+%{__make} NAME=${selinuxvariant} -f %{_datadir}/selinux/devel/Makefile
   mv dirsrv-admin.pp dirsrv-admin.pp.${selinuxvariant}
-  make NAME=${selinuxvariant} -f /usr/share/selinux/devel/Makefile clean
+%{__make} NAME=${selinuxvariant} -f %{_datadir}/selinux/devel/Makefile clean
 done
 cd -
 %endif
 
 %install
-rm -rf $RPM_BUILD_ROOT 
+rm -rf $RPM_BUILD_ROOT
 
-make DESTDIR="$RPM_BUILD_ROOT" install
+%{__make} DESTDIR="$RPM_BUILD_ROOT" install
 
 # make console jars directory
-mkdir -p $RPM_BUILD_ROOT%{_datadir}/dirsrv/html/java
+install -d $RPM_BUILD_ROOT%{_datadir}/dirsrv/html/java
 
 #remove libtool and static libs
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
@@ -116,9 +117,9 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/dirsrv/modules/*.la
 cd selinux-built
 for selinuxvariant in %{selinux_variants}
 do
-  install -d %{buildroot}%{_datadir}/selinux/${selinuxvariant}
+  install -d $RPM_BUILD_ROOT%{_datadir}/selinux/${selinuxvariant}
   install -p -m 644 dirsrv-admin.pp.${selinuxvariant} \
-    %{buildroot}%{_datadir}/selinux/${selinuxvariant}/dirsrv-admin.pp
+    $RPM_BUILD_ROOT%{_datadir}/selinux/${selinuxvariant}/dirsrv-admin.pp
 done
 cd -
 %endif
@@ -132,7 +133,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %preun
 if [ $1 = 0 ]; then
-        /sbin/service dirsrv-admin stop >/dev/null 2>&1 || :
+        %service dirsrv-admin stop >/dev/null 2>&1 || :
         /sbin/chkconfig --del dirsrv-admin
 fi
 
@@ -156,7 +157,7 @@ do
   semodule -s ${selinuxvariant} -r dirsrv-admin 2>/dev/null || :
 done
 fixfiles -R %{name} restore || :
-/sbin/service dirsrv-admin condrestart > /dev/null 2>&1 || :
+%service dirsrv-admin condrestart > /dev/null 2>&1 || :
 fi
 
 %postun selinux
@@ -169,22 +170,20 @@ fi
 %endif
 
 %files
-%defattr(-,root,root,-)
+%defattr(644,root,root,755)
 %doc LICENSE
 %dir %{_sysconfdir}/dirsrv/admin-serv
 %config(noreplace)%{_sysconfdir}/dirsrv/admin-serv/*.conf
 %{_datadir}/dirsrv
-%{_sysconfdir}/rc.d/init.d/dirsrv-admin
-%config(noreplace)%{_sysconfdir}/sysconfig/dirsrv-admin
-%{_sbindir}/*
-%{_libdir}/*.so.*
+%attr(754,root,root) /etc/rc.d/init.d/dirsrv-admin
+%config(noreplace)%verify(not md5 mtime size) /etc/sysconfig/dirsrv-admin
+%attr(755,root,root) %{_sbindir}/*
+%attr(755,root,root) %{_libdir}/*.so.*
 %{_libdir}/dirsrv
 %{_mandir}/man8/*
 
 %if 0
 %files selinux
-%defattr(-,root,root,-)
+%defattr(644,root,root,755)
 %{_datadir}/selinux/*/dirsrv-admin.pp
 %endif
-
-%changelog
