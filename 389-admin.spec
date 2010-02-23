@@ -1,5 +1,6 @@
 # TODO
 # - merge with fedora-ds-admin.spec
+# - apache2 only package? the apache deps seems overkill
 
 #%global selinux_variants mls targeted
 
@@ -34,28 +35,25 @@ BuildRequires:	checkpolicy
 BuildRequires:	selinux-policy-devel
 %endif
 Requires:	389-ds-base
-Requires:	apache-mod_nss
-Requires:	apache-mod_authz_host
+Requires:	apache-mod_actions
+Requires:	apache-mod_alias
 Requires:	apache-mod_auth_basic
 Requires:	apache-mod_authn_file
-Requires:	apache-mod_log_config
-Requires:	apache-mod_env
-Requires:	apache-mod_mime_magic
-Requires:	apache-mod_expires
+Requires:	apache-mod_authz_host
+Requires:	apache-mod_cache
 Requires:	apache-mod_deflate
+Requires:	apache-mod_dir
+Requires:	apache-mod_env
+Requires:	apache-mod_expires
 Requires:	apache-mod_headers
-Requires:	apache-mod_unique_id
+Requires:	apache-mod_log_config
+Requires:	apache-mod_mime_magic
+Requires:	apache-mod_negotiation
+Requires:	apache-mod_nss
+Requires:	apache-mod_rewrite
 Requires:	apache-mod_setenvif
-Requires: apache-mod_vhost_alias
-Requires: apache-mod_negotiation
-Requires: apache-mod_dir
-Requires: apache-mod_actions
-Requires: apache-mod_alias
-Requires: apache-mod_rewrite
-Requires: apache-mod_cache
-Requires: apache-mod_cache
-
-
+Requires:	apache-mod_unique_id
+Requires:	apache-mod_vhost_alias
 # the following are needed for some of our scripts
 Requires:	nss-tools
 Requires:	perl-Mozilla-LDAP
