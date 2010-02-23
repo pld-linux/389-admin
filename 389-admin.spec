@@ -15,7 +15,7 @@ Group:		Daemons
 URL:		http://directory.fedoraproject.org/
 Source0:	http://directory.fedoraproject.org/sources/%{name}-%{version}%{subver}.tar.bz2
 # Source0-md5:	2d5c5e2058429086bbced744590aba7f
-#Patch1:	f11-httpd.patch
+Patch0:	%{name}-httpd.conf.patch
 BuildRequires:	389-adminutil-devel
 BuildRequires:	apache-devel
 BuildRequires:	apr-devel
@@ -40,8 +40,6 @@ Requires:	apache-mod_alias
 Requires:	apache-mod_auth_basic
 Requires:	apache-mod_authn_file
 Requires:	apache-mod_authz_host
-Requires:	apache-mod_cache
-Requires:	apache-mod_deflate
 Requires:	apache-mod_dir
 Requires:	apache-mod_env
 Requires:	apache-mod_expires
@@ -80,7 +78,7 @@ SELinux policy for the 389 Adminstration Server package.
 
 %prep
 %setup -q -n %{name}-%{version}%{subver}
-#%patch1
+%patch0 -p1
 
 %build
 %{__aclocal} -I m4
