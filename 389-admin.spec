@@ -78,7 +78,7 @@ SELinux policy for the 389 Adminstration Server package.
 
 %prep
 %setup -q -n %{name}-%{version}%{subver}
-%patch0 -p1
+%patch -P0 -p1
 
 %build
 %{__aclocal} -I m4
